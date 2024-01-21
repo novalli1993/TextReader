@@ -1,0 +1,15 @@
+.viewerSeparator {
+    -fx-background-color: transparent
+}
+.viewerSeparator:hover {
+    -fx-background-color: blue
+}
+.viewerSeparator:selected {
+    -fx-background-color: blue
+}
+.catalogSwitchBar {
+    -fx-background-color: transparent
+}
+.catalogSwitchBar:hover {
+    -fx-background-color: #194BD475
+}
