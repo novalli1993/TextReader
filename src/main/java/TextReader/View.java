@@ -1,5 +1,6 @@
 package TextReader;
 
+import TextReader.model.data.Book;
 import TextReader.model.data.Chapter;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -105,12 +106,19 @@ public class View extends Application {
                 content.setText("←请选择章节");
                 catalog.setItems(viewModel.catalog(selectedFile.getPath()));
                 String name = selectedFile.getName().substring(0, selectedFile.getName().lastIndexOf("."));
-                MenuItem book = getMenuItem(name);
-                book.setOnAction(event -> {
-                    content.setText("←请选择章节");
-                    catalog.setItems(viewModel.catalog(name));
-                });
-                menuOpen.getItems().add(0, book);
+                boolean isExisted = false;
+                for (MenuItem item : menuOpen.getItems()) {
+                    // 防止识别到MenuItem的子类，如SeparatorMenuItem。
+                    if (item.getClass().isAssignableFrom(MenuItem.class) && item.getText().equals(name)) isExisted = true;
+                }
+                if (!isExisted) {
+                    MenuItem book = getMenuItem(name);
+                    book.setOnAction(event -> {
+                        content.setText("←请选择章节");
+                        catalog.setItems(viewModel.catalog(name));
+                    });
+                    menuOpen.getItems().add(0, book);
+                }
             }
         });
     }
@@ -157,7 +165,7 @@ public class View extends Application {
 
     private void setCatalog(ObservableList<Chapter> observableChapterList) {
         int minSize = 0;
-        for (int i = 0; i <= 10; i++){
+        for (int i = 0; i <= 10; i++) {
             minSize += observableChapterList.get(i).getTitle().length();
         }
         catalog = new ListView<>(observableChapterList);
@@ -187,7 +195,7 @@ public class View extends Application {
             }
         });
         textScroll.layoutBoundsProperty().addListener((obs, oldBound, newBound) -> {
-            content.setWrappingWidth(newBound.getWidth()-scrollBarWidth);
+            content.setWrappingWidth(newBound.getWidth() - scrollBarWidth);
         });
     }
 
@@ -200,7 +208,7 @@ public class View extends Application {
             double textScrollWidth = textScroll.getLayoutBounds().getWidth();
             catalog.setPrefWidth(catalogWidth + e.getX());
             textScroll.setPrefWidth(textScrollWidth - e.getX());
-            content.setWrappingWidth(textScroll.getWidth()-scrollBarWidth);
+            content.setWrappingWidth(textScroll.getWidth() - scrollBarWidth);
         });
     }
 
@@ -252,11 +260,11 @@ public class View extends Application {
         // 组装各个组件
         background.getChildren().addAll(topMenuBar, viewerPane);
         VBox.setVgrow(topMenuBar, Priority.NEVER);
-        VBox.setVgrow(viewerPane,Priority.ALWAYS);
+        VBox.setVgrow(viewerPane, Priority.ALWAYS);
         topMenuBar.getMenus().addAll(menuOpen, menuSetting);
         // 是否有已缓存书籍
         List<String> bookList = viewModel.ListBooks();
-        if (bookList !=null) {
+        if (bookList != null) {
             for (String name : bookList) {
                 MenuItem book = getMenuItem(name);
                 book.setOnAction(e -> {
@@ -266,7 +274,7 @@ public class View extends Application {
                 menuOpen.getItems().add(0, book);
             }
         }
-        menuOpen.getItems().addAll(separatorMenuItem,openNew);
+        menuOpen.getItems().addAll(separatorMenuItem, openNew);
         menuSetting.getItems().setAll(fontSizeUp, fontSizeDown);
         viewerPane.getChildren().addAll(viewer, catalogSwitchBar);
         viewer.getChildren().addAll(catalog, viewerSeparator, textScroll);
