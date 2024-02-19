@@ -5,6 +5,7 @@ import TextReader.model.data.Chapter;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -175,6 +176,7 @@ public class View extends Application {
             Chapter selectedChapter = catalog.getSelectionModel().getSelectedItem();
             if (selectedChapter != null) {
                 content.setText(viewModel.paragraphs(selectedChapter));
+                textScroll.setVvalue(0);
             }
             e.consume();
         });
@@ -203,13 +205,16 @@ public class View extends Application {
         viewerSeparator = getSeparator();
         viewerSeparator.getStyleClass().add("viewerSeparator");
         viewerSeparator.setOrientation(Orientation.VERTICAL);
+        viewerSeparator.setOnMouseEntered(e -> viewerSeparator.setCursor(Cursor.E_RESIZE));
         viewerSeparator.setOnMouseDragged(e -> {
+            viewerSeparator.setCursor(Cursor.E_RESIZE);
             double catalogWidth = catalog.getWidth();
             double textScrollWidth = textScroll.getLayoutBounds().getWidth();
             catalog.setPrefWidth(catalogWidth + e.getX());
             textScroll.setPrefWidth(textScrollWidth - e.getX());
             content.setWrappingWidth(textScroll.getWidth() - scrollBarWidth);
         });
+        viewerSeparator.setOnMouseExited(e -> viewerSeparator.setCursor(Cursor.DEFAULT));
     }
 
     private void setContent() {
