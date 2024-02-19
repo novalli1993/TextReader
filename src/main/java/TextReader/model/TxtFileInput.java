@@ -3,18 +3,15 @@ package TextReader.model;
 import TextReader.model.data.Book;
 import TextReader.model.data.Chapter;
 import TextReader.model.data.Paragraph;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TxtFileInput {
-    private final String tmpPath;
-
-    public TxtFileInput(String tmpPath) {
-        this.tmpPath = tmpPath;
-    }
     public Book bookFormat(String filePath) {
         String name = new File(filePath).getName();
         name = name.substring(0, name.lastIndexOf("."));
@@ -30,34 +27,34 @@ public class TxtFileInput {
             int paraCount = 0;
             int chapCount = 0;
             String firstTitle = "前言";
-            while (line != null){
+            while (line != null) {
                 while (line.isEmpty()) line = br.readLine();
                 Paragraph paragraph = new Paragraph(paraCount, line);
                 paragraph.formatParagraph();
-                if (paragraph.isTitle()){
+                if (paragraph.isTitle()) {
                     if (!chapters.isEmpty()) {
-                        chapters.get(chapters.size()-1).setEnd(paraCount-1);
+                        chapters.get(chapters.size() - 1).setEnd(paraCount - 1);
                     }
                     chapters.add(new Chapter(chapCount, paragraph.getText(), paraCount, paraCount));
-                    chapCount ++;
+                    chapCount++;
                 } else {
-                    if (paraCount == 0){
+                    if (paraCount == 0) {
                         chapters.add(new Chapter(chapCount, firstTitle, paraCount, paraCount));
-                        chapCount ++;
+                        chapCount++;
                     }
                     paragraphs.add(paragraph);
                     paraCount++;
                 }
                 line = br.readLine();
             }
-            if (chapters.get(chapters.size()-1).getTitle().equals(firstTitle)) {
+            if (chapters.get(chapters.size() - 1).getTitle().equals(firstTitle)) {
                 chapters.clear();
                 int chapSlip = 50;
-                for (int i = 0; i <= paraCount/chapSlip; i++) {
-                    chapters.add(new Chapter(i, "", i * chapSlip, Math.min(i * chapSlip+chapSlip-1, paraCount)));
+                for (int i = 0; i <= paraCount / chapSlip; i++) {
+                    chapters.add(new Chapter(i, "", i * chapSlip, Math.min(i * chapSlip + chapSlip - 1, paraCount)));
                 }
             } else {
-                chapters.get(chapters.size()-1).setEnd(paraCount);
+                chapters.get(chapters.size() - 1).setEnd(paraCount);
             }
         } catch (Exception e) {
             e.printStackTrace();
